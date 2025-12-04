@@ -308,7 +308,7 @@ public class MainActivity extends Activity {
             selectedExternalFile = cursor.getString(columnIndex);
             testSample = TEST_SAMPLES[requestCode];
         }
-        catch (IllegalArgumentException ex) {
+        catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -367,8 +367,9 @@ public class MainActivity extends Activity {
                         if (currentTest.usesCamera()) {
                             if (camera == null)
                                 try {
-                                    camera = new Camera(context, MainActivity.this);
-                                    camera.chooseResolution(385,385, Camera.ResolutionSelectionPolicy.SMALLEST_COVERAGE);
+                                    camera = new Camera(context, MainActivity.this, Camera.Facing.EXTERNAL);
+                                    Log.i("Beatmup", "Using external camera");
+                                    camera.chooseResolution(640, 480, Camera.ResolutionSelectionPolicy.SMALLEST_COVERAGE);
                                     Log.i("Beatmup", "Camera resolution: "
                                             + Integer.toString(camera.getResolution().getWidth()) + "x"
                                             + Integer.toString(camera.getResolution().getHeight()));

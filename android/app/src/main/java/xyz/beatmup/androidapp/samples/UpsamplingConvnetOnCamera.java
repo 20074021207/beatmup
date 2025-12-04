@@ -48,7 +48,7 @@ public class UpsamplingConvnetOnCamera extends TestSample {
 
     @Override
     public String getDescription() {
-        return "Inferring 2x upsampling neural net on the camera preview (bottom half; top half is linear interpolation).";
+        return "Inferring 2x upsampling neural net on the camera preview (bottom half; top half is original camera image).";
     }
 
     @Override
@@ -57,9 +57,10 @@ public class UpsamplingConvnetOnCamera extends TestSample {
 
         int width =  camera.getResolution().getWidth();
         int height = camera.getResolution().getHeight();
+        int scale = 2;
         Beatmup.Bitmap input  = new Beatmup.Bitmap(context, width, height, PixelFormat.TripleByte);
-        Beatmup.Bitmap output = new Beatmup.Bitmap(context, 2 * width, 2 * height, PixelFormat.TripleByte);
-        info = String.format("%dx%d -> %dx%d", width, height, 2 * width, 2 * height);
+        Beatmup.Bitmap output = new Beatmup.Bitmap(context, scale * width, scale * height, PixelFormat.TripleByte);
+        info = String.format("%dx%d -> %dx%d", width, height, scale * width, scale * height);
 
         // Create a dummy shader copying camera texture onto another texture.
         // This is done because the upsampling may take a significant time, and when reconstructing
@@ -96,18 +97,22 @@ public class UpsamplingConvnetOnCamera extends TestSample {
         imgTransform.rotateAround(0.5f, 0.5f * height / width, orientation);
 
         Scene scene = new Scene();
-        {
-            Scene.BitmapLayer l = scene.newBitmapLayer();
-            l.setCenterPosition(0.5f, 0.5f);
-            l.setImageTransform(imgTransform);
-            l.setBitmap(input);
-        }
-
+        
+        // 上半部分：显示原始摄像头图像（不经过任何处理）
         {
             Scene.ShapedBitmapLayer l = scene.newShapedBitmapLayer();
-            l.setCenterPosition(0.5f, 0.5f);
+            l.setCenterPosition(0.5f, 0.5f);  // 调整位置到上半部分
             l.setImageTransform(imgTransform);
-            l.setMaskPosition(0, 0.5f * height / width);
+            l.setMaskPosition(0, 0);  // 从顶部开始
+            l.setBitmap(camera.getImage());  // 直接使用摄像头原始图像
+        }
+
+        // 下半部分：显示CNN超分结果
+        {
+            Scene.ShapedBitmapLayer l = scene.newShapedBitmapLayer();
+            l.setCenterPosition(0.5f, 0.5f);  // 调整位置到下半部分
+            l.setImageTransform(imgTransform);
+            l.setMaskPosition(0, 0);  // 从中间开始
             l.setBitmap(output);
         }
 

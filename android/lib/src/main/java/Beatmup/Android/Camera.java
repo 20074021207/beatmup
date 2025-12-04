@@ -21,7 +21,6 @@ package Beatmup.Android;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -94,12 +93,14 @@ public class Camera {
 
     /**
      * Creates a Camera object instance to operate the device cameras and capture content
-     * @param beatmup       A Beatmup context instance
-     * @param context       An Android context instance
+     *
+     * @param beatmup  A Beatmup context instance
+     * @param context  An Android context instance
+     * @param cameraId
      * @throws CameraAccessException when the device camera cannot be accessed.
      */
     @TargetApi(Build.VERSION_CODES.M)
-    public Camera(Beatmup.Android.Context beatmup, Context context) throws CameraAccessException {
+    public Camera(Beatmup.Android.Context beatmup, Context context, Facing  facing) throws CameraAccessException {
         this.context = beatmup;
         image = new ExternalBitmap(beatmup);
         stateCallback = new DeviceStateCallback();
@@ -107,7 +108,7 @@ public class Camera {
         manager = (CameraManager) context.getSystemService(android.content.Context.CAMERA_SERVICE);
         assert manager != null;
         cameraIds = manager.getCameraIdList();
-        selectCamera(0);
+        selectCamera(facing);
 
         backgroundThread = new HandlerThread("Beatmup camera thread");
         backgroundThread.start();
