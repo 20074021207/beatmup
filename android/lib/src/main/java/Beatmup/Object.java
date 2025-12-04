@@ -34,7 +34,7 @@ public class Object {
      * Destroys the native object.
      * After the native object is destroyed, its Java counterpart likely becomes unusable.
      */
-    protected synchronized void dispose() {
+    public synchronized void dispose() {
         disposeNative();
     }
 
